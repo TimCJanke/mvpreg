@@ -21,10 +21,7 @@ class DeepGenerativeRegression(MVPRegModel):
                  n_layers_encoder=0, 
                  n_neurons_encoder=100, 
                  activation_encoder="relu", 
-                 n_samples_train=10,
-                 n_samples_val = None, 
-                 loss = "ES",
-                 p_vs = 0.5,
+                 n_samples_val = 10, 
                  **kwargs):
 
         super().__init__(**kwargs)
@@ -43,11 +40,43 @@ class DeepGenerativeRegression(MVPRegModel):
         self.activation_encoder = activation_encoder
         
         # training and evaluation
-        self.n_samples_train = n_samples_train
-        if n_samples_val is None:
-            self.n_samples_val = n_samples_train
+        self.n_samples_val = n_samples_val
+    
+        self._expand_y_dim = True
+        
+        self.model = self._build_model()
+        self.model.summary(expand_nested=True)
+        
+    
+    def simulate(self, x, n_samples=1, max_array_size_mb=256.0):
+        """ draw n_samples randomly from conditional distribution p(y|x)"""
+        
+        size = x.nbytes*n_samples/1e6
+        
+        if size > max_array_size_mb:
+            x_ = np.array_split(x, np.ceil(size/max_array_size_mb).astype(int))
+            y = []
+            for x_i in x_:
+                y.append(self.model(np.repeat(np.expand_dims(self._scale_x(x_i), axis=2), repeats=n_samples, axis=2)))
+            y = np.concatenate(y, axis=0)
+        
         else:
-            self.n_samples_val = n_samples_val
+            y = self.model(np.repeat(np.expand_dims(self._scale_x(x), axis=2), repeats=n_samples, axis=2))
+
+        return self._rescale_y_samples(y)
+
+
+class ScoringRuleDGR(MVPRegModel):
+    def __init__(self,
+                 n_samples_train=10,
+                 loss = "ES",
+                 p_vs = 0.5,
+                 **kwargs):
+
+        super().__init__(**kwargs)
+        
+        # training and evaluation
+        self.n_samples_train = n_samples_train
         
         if loss == "ES":
             self.loss = EnergyScore()
@@ -57,7 +86,6 @@ class DeepGenerativeRegression(MVPRegModel):
         else:
             raise ValueError("Unknown loss function. 'loss' must be ES or VS.")
         
-        self._expand_y_dim = True
         
         self.model = self._build_model()
         self.model.summary(expand_nested=True)
@@ -81,22 +109,18 @@ class DeepGenerativeRegression(MVPRegModel):
         return model
 
 
-    def simulate(self, x, n_samples=1, max_array_size_mb=256.0):
-        """ draw n_samples randomly from conditional distribution p(y|x)"""
-        
-        size = x.nbytes*n_samples/1e6
-        
-        if size > max_array_size_mb:
-            x_ = np.array_split(x, np.ceil(size/max_array_size_mb).astype(int))
-            y = []
-            for x_i in x_:
-                y.append(self.model(np.repeat(np.expand_dims(self._scale_x(x_i), axis=2), repeats=n_samples, axis=2)))
-            y = np.concatenate(y, axis=0)
-        
-        else:
-            y = self.model(np.repeat(np.expand_dims(self._scale_x(x), axis=2), repeats=n_samples, axis=2))
+class AdversarialDGR(MVPRegModel):
+    def __init__(self,**kwargs):
 
-        return self._rescale_y_samples(y)
+        super().__init__(**kwargs)
+
+        
+        self.model = self._build_model()
+        self.model.summary(expand_nested=True)
+
+    def _build_model(self):
+        #TODO
+        pass
 
 
 ### defining the custom models ####
