@@ -19,4 +19,4 @@ Model API follows scikit learn style: ``model=mvpregmodel(**kwargs)`` --> ``mode
 
 MVPReg also comes with 3 data sets from the GEFCom 2014 as well as evaluation and plotting functionionality (proper scoring rules, DM tests, visualizations).
 
-The package is under active developement so there might breaking changes.
+The package is under active developement so there might be breaking changes.
