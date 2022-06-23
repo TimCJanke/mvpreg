@@ -1,3 +1,6 @@
+# datasets folder created in setup
+data/datasets
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
