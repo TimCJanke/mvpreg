@@ -1,0 +1,3 @@
+from .models.quantile_regression import DeepQuantileRegression
+from .models.parametric_regression import DeepParametricRegression
+from .models.generative_regression import DeepGenerativeRegression
