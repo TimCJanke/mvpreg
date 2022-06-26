@@ -13,7 +13,7 @@ from .helpers import qr_interpolator
 
 
 
-################ Base class for MVPReg Models with Quantile Regression + Copula ################
+################ MVPReg Models with Quantile Regression ################
 class DeepQuantileRegression(MarginsAndCopulaModel):
     def __init__(self, 
                  taus=[0.1, 0.25, 0.5, 0.75, 0.9], 
@@ -44,7 +44,6 @@ class DeepQuantileRegression(MarginsAndCopulaModel):
         q = ClipValues(low=np.reshape(self.censored_left, (1,self.dim_out,1)), high=np.reshape(self.censored_right, (1,self.dim_out,1)))(q)
 
         mdl = tf.keras.models.Model(inputs=x, outputs=q)
-        #mdl.summary()
         mdl.compile(loss=QuantileLoss(taus=self.taus), optimizer=self.optimizer)
         
         return mdl

@@ -32,15 +32,17 @@ class MVPRegModel(object):
         # forward model hyperparameters
         self.dim_in = dim_in
         self.dim_out = dim_out
+        
         self.output_activation = output_activation
         self.n_layers = n_layers
         self.n_neurons = n_neurons
         self.activation = activation
         
+        # censored_left and censored_right should be arrays of shape (dim_out, 1)
         if isinstance(censored_left, (list, tuple, np.ndarray)):
-            self.censored_left = np.reshape(censored_left, (1,-1))
+            self.censored_left = np.reshape(censored_left, (1,-1)) # if it's an array with length dim out
         else:
-            self.censored_left = np.zeros((1, self.dim_out)) + censored_left
+            self.censored_left = np.zeros((1, self.dim_out)) + censored_left # if it's a float
         
         if isinstance(censored_right, (list, tuple, np.ndarray)):
             self.censored_right = np.reshape(censored_right, (1,-1))
@@ -416,17 +418,20 @@ class MVPRegModel(object):
 ################ Class for all models that use univariate margins + copula style ################
 class MarginsAndCopulaModel(MVPRegModel):
     def __init__(self,
-                 copula_type="independence",
+                 copula_type = "independence",
                  vine_structure = None,
                  pair_copula_families = "nonparametric",
                  **kwargs):
         
         super().__init__(**kwargs)
+
+        if copula_type in ("d-vine", "c-vine") and vine_structure is None:
+            raise ValueError(f"'vine_structure' is {vine_structure}. If copula type is 'd-vine' or 'c-vine', 'vine_structure' must be specified by an iterable of length {self.dim_out} (e.g. [1,2,3]).")
         
         self.copula_type = copula_type
         self.vine_structure = vine_structure
         self.pair_copula_families = pair_copula_families
-    
+
     def fit(self, x, y, fit_copula_model=True, **kwargs):
         super().fit(x, y, **kwargs)
         
@@ -466,8 +471,8 @@ class MarginsAndCopulaModel(MVPRegModel):
         elif self.copula_type == "schaake":
             copula = SchaakeShuffle().fit(u)
         
-        elif self.copula_type in ("r-vine", "d-vine", "c_vine"):
-            copula = VineCopula(pair_copula_families=self.pair_copula_families, vine_structure=self.vine_structure, vine_type=self.vine_type).fit(u)
+        elif self.copula_type in ("r-vine", "d-vine", "c-vine"):
+            copula = VineCopula(pair_copula_families=self.pair_copula_families, vine_structure=self.vine_structure, vine_type=self.copula_type).fit(u)
         
         else:
             raise ValueError(f"Copula type {self.copula_type} is unknown. Must be one of: independence, schaake, gaussian, r-vine, c-vine, d-vine.")
