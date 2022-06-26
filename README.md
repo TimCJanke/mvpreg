@@ -1,9 +1,9 @@
 # The MVPReg package
 
-The **MVPReg** (*M*ulti*v*ariate *P*robabilistic *Reg*ression) package offers a range of models to model multivariate predictive distributions.
+The **MVPReg** (**M**ulti**V**ariate **P**robabilistic **Reg**ression) package offers a range of models to model multivariate predictive distributions.
 Classic regression models only predict the expectation $E[P(Y_d|X=x)]$, probabilistic regression and forecasting models model $P(Y_d|X=x)$, i.e., they represent univariate conditional distributions.
-Our goal is to model the full joint conditional distribution $P(Y|X=x)$ with $Y = [Y_1, ... Y_D]^T$.
-For example, y could be the wind power generation from D spatially distributed wind power plants based on the wind speed and direction forecast x.
+Our goal is to model the full joint conditional distribution $P(Y|X=x)$ with $Y = [Y_1, ... ,Y_D]^T$.
+For example, $y$ could be the wind power generation from $D$ spatially distributed wind power plants based on the wind speed and direction forecast $x$.
 The dimensions could also relate to temporal dimensions, e.g., the electricity demand of a region over the next 24 hours.
 
 MVPReg offers two approaches:
