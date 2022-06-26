@@ -1,6 +1,5 @@
 # datasets folder created in setup
 mvpreg/data/datasets
-example.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
