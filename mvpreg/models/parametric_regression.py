@@ -73,7 +73,6 @@ class DeepParametricRegression(MarginsAndCopulaModel):
                                                                                                            high=self.censored_right.astype(np.float32)))(params_predict)
                 
             mdl = tf.keras.models.Model(inputs=x, outputs=dist_pred)
-            #mdl.summary()
             mdl.compile(loss=LogScore(), optimizer=self.optimizer)
             
             return mdl

@@ -97,19 +97,19 @@ class VineCopula(object):
 
     def fit(self, u):
         if self.vine_type == "c-vine":
-            copula = pv.Vinecop(data=u, structure=pv.CVineStructure(order=self.vine_structure), controls=self.controls)
+            self.copula = pv.Vinecop(data=u, structure=pv.CVineStructure(order=self.vine_structure), controls=self.controls)
         
         elif self.vine_type == "d-vine":
-            copula = pv.Vinecop(data=u, structure=pv.DVineStructure(order=self.vine_structure), controls=self.controls)
+            self.copula = pv.Vinecop(data=u, structure=pv.DVineStructure(order=self.vine_structure), controls=self.controls)
         
         elif self.vine_type == "r-vine":
             if self.vine_structure is None:
-                copula = pv.Vinecop(data=u, controls=self.controls)
+                self.copula = pv.Vinecop(data=u, controls=self.controls)
             else:
-                copula = pv.Vinecop(data=u, controls=self.controls, structure=pv.RVineStructure(order=self.vine_structure))
+                self.copula = pv.Vinecop(data=u, controls=self.controls, structure=pv.RVineStructure(order=self.vine_structure))
         
         print("\nVine copula fit:\n")
-        print(copula.str())
+        print(self.copula.str())
         
         return self
 

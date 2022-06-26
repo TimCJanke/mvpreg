@@ -122,33 +122,33 @@ class LogScore(Loss):
 
 
 
-#### Keras metrics ### 
-# class EnergyScore(tf.keras.metrics.Metric):
-#   def __init__(self, name='energy_score', **kwargs):
-#     super(EnergyScore, self).__init__(name=name, **kwargs)
-#     self.es = self.add_weight(name='es', initializer = 'zeros')
+### Keras metrics ### 
+class EnergyScoreMetric(tf.keras.metrics.Metric):
+  def __init__(self, name='ES', **kwargs):
+    super().__init__(name=name, **kwargs)
+    self.es = self.add_weight(name='es', initializer = 'zeros')
 
-#   def update_state(self, y_true, y_pred):
-#       self.es.assign_add(tf.reduce_mean(compute_energy_score(y_true, y_pred)))
+  def update_state(self, y_true, y_pred):
+      self.es.assign_add(tf.reduce_mean(compute_energy_score(y_true, y_pred)))
 
-#   def result(self):
-#     return self.es
+  def result(self):
+    return self.es
 
-#   def reset_states(self):
-#     self.es.assign(0.0)
+  def reset_state(self):
+    self.es.assign(0.0)
     
 
-# class VariogramScore(tf.keras.metrics.Metric):
-#   def __init__(self, name='variogram_score', p=0.5, **kwargs):
-#     super(VariogramScore, self).__init__(name=name, **kwargs)
-#     self.vs = self.add_weight(name='vs', initializer = 'zeros')
-#     self.p = p
+class VariogramScoreMetric(tf.keras.metrics.Metric):
+  def __init__(self, name='VS', p=0.5, **kwargs):
+    super().__init__(name=name, **kwargs)
+    self.vs = self.add_weight(name='vs', initializer = 'zeros')
+    self.p = p
     
-#   def update_state(self, y_true, y_pred):
-#       self.vs.assign_add(tf.reduce_mean(compute_variogram_score(y_true, y_pred, p=self.p)))
+  def update_state(self, y_true, y_pred):
+      self.vs.assign_add(tf.reduce_mean(compute_variogram_score(y_true, y_pred, p=self.p)))
 
-#   def result(self):
-#     return self.vs
+  def result(self):
+    return self.vs
 
-#   def reset_states(self):
-#     self.vs.assign(0.0)
+  def reset_state(self):
+    self.vs.assign(0.0)
