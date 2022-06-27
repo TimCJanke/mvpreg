@@ -1,12 +1,16 @@
 #%%
 import numpy as np
 import tensorflow as tf
+import pandas as pd
 
 from mvpreg.data import data_utils
 from mvpreg import DeepQuantileRegression as DQR
 from mvpreg import DeepParametricRegression as PRM
 from mvpreg import ScoringRuleDGR as DGR
 from mvpreg import AdversarialDGR as CGAN
+
+from mvpreg.evaluation import scoring_rules
+from mvpreg.evaluation import visualization
 
 
 #%% Data and hyperparams
@@ -101,3 +105,27 @@ model_gan.fit(x_train,
               callbacks=tf.keras.callbacks.EarlyStopping(patience=25, verbose=1, mode="min", restore_best_weights=True))
 
 y_predict["GAN"] = model_gan.simulate(x_test, n_samples=1000)
+
+
+#%% evalutaion
+
+# first let's have a look at two examplary hours
+names=dim_names=["ZONE_"+str(i) for i in ZONES[0:3]]
+visualization.scenario_plot_spatial(y_test[0,0:3], y_predict["DGR"][0,0:3,0:500].T, dim_names=dim_names)
+visualization.scenario_plot_spatial(y_test[400,0:3], y_predict["DGR"][400,0:3,0:500].T, dim_names=dim_names)
+
+
+# let's compare models based on several scores
+scores={}
+for key in y_predict:
+    scores[key] = scoring_rules.get_all_scores_sample(y_test, y_predict[key][:,:,0:500])
+scores = pd.DataFrame(scores).T
+print(scores)
+
+# let's assess significance of score differences via DM test and plot the results
+es_series={}
+for key in y_predict:
+    es_series[key] = scoring_rules.es_sample(y_test, y_predict[key][:,:,0:500], return_single_scores=True)
+
+dm_results_matrix = scoring_rules.dm_test_matrix(es_series)
+visualization.plot_dm_test_matrix(dm_results_matrix)
