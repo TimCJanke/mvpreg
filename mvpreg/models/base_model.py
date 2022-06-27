@@ -267,7 +267,7 @@ class MVPRegModel(object):
         if self.output_scaler is not None:
             self.censored_left = self._scale_y(self.censored_left)
             self.censored_right = self._scale_y(self.censored_right)
-            self.model = self._build_model() # necessary as these is parameters of the model
+            self.model = self._build_model() # necessary as these are hyper parameters of the model
         
         # run training
         print("\nTraining model... \n")
@@ -375,7 +375,7 @@ class MVPRegModel(object):
             
             if self.shared_output_scaler is False:
                 self.scaler_y.fit(y)
-            elif self.shared_input_scaler is True:
+            elif self.shared_output_scaler is True:
                 self.scaler_y.fit(np.reshape(y, (-1, 1)))
         
         else:
@@ -386,7 +386,7 @@ class MVPRegModel(object):
         if self.output_scaler is not None:
             if self.shared_output_scaler is False:
                 return self.scaler_y.transform(y)
-            elif self.shared_input_scaler is True:
+            elif self.shared_output_scaler is True:
                 return np.reshape(self.scaler_y.transform(np.reshape(y, (-1, 1))), (y.shape))
         else:
             return y
