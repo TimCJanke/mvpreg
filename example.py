@@ -60,7 +60,7 @@ model_dqr.fit(x_train,
                     x_val=x_val,
                     y_val=y_val, 
                     epochs=100,
-                    callbacks=tf.keras.callbacks.EarlyStopping(patience=10, verbose=1, mode="min", restore_best_weights=True))
+                    early_stopping=True)
 
 y_predict["QR"] = model_dqr.simulate(x_test, n_samples=1000)
 
@@ -71,7 +71,7 @@ model_param.fit(x_train,
                 x_val=x_val,
                 y_val=np.clip(y_val, nn_base_config["censored_left"]+1e-2, nn_base_config["censored_right"]-1e-2), # because LogitNormal is only define on (0,1)
                 epochs=100,
-                callbacks=tf.keras.callbacks.EarlyStopping(patience=20, verbose=1, mode="min", restore_best_weights=True))
+                early_stopping=True)
 
 y_predict["PARAM"] = model_param.simulate(x_test, n_samples=1000)
 
@@ -88,7 +88,7 @@ model_dgr.fit(x_train,
               x_val=x_val,
               y_val=y_val, 
               epochs=100,
-              callbacks=tf.keras.callbacks.EarlyStopping(patience=20, verbose=1, mode="min", restore_best_weights=True))
+              early_stopping=True)
 
 y_predict["DGR"] = model_dgr.simulate(x_test, n_samples=1000)
 
@@ -107,7 +107,7 @@ model_gan.fit(x_train,
               x_val=x_val,
               y_val=y_val, 
               epochs=1000,
-              callbacks=tf.keras.callbacks.EarlyStopping(patience=20, verbose=1, mode="min", restore_best_weights=True))
+              early_stopping=True)
 
 y_predict["GAN"] = model_gan.simulate(x_test, n_samples=1000)
 

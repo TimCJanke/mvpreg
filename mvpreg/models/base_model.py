@@ -3,6 +3,7 @@
 """
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, QuantileTransformer
 
 
@@ -77,11 +78,14 @@ class MVPRegModel(object):
             steps_per_epoch=None,
             validation_steps=None,
             validation_batch_size=None,
+            early_stopping=False,
+            patience=20,
+            restore_best_weights=True,
+            plot_learning_curve=True,
             validation_freq=1,
             max_queue_size=10,
             workers=1,
-            use_multiprocessing=False,
-            plot_learning_curve=True):
+            use_multiprocessing=False):
             
         """Trains the model for a fixed number of epochs (iterations on a dataset).
         
@@ -269,6 +273,15 @@ class MVPRegModel(object):
             self.censored_right = self._scale_y(self.censored_right)
             self.model = self._build_model() # necessary as these are hyper parameters of the model
         
+        if early_stopping:
+            es_clb = tf.keras.callbacks.EarlyStopping(patience=patience, verbose=1, mode="min", restore_best_weights=restore_best_weights)
+            if callbacks is None:
+                callbacks = es_clb
+            elif isinstance(callbacks, (list, tuple, np.ndarray)):
+                callbacks = [*callbacks, es_clb]
+            else:
+                callbacks = [callbacks, es_clb]
+            
         # run training
         print("\nTraining model... \n")
         self.loss_dict = self.model.fit(x=x_, 
