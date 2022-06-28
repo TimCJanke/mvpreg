@@ -123,8 +123,8 @@ class DeepQuantileRegression(MarginsAndCopulaModel):
             for d in range(q.shape[1]):
                 p_pred[i,d] = qr_interpolator(q=q[i,d,:], 
                                               taus=self.taus, 
-                                              x_min=self.censored_left[0,d], 
-                                              x_max=self.censored_right[0,d], 
+                                              censored_left=self.censored_left[0,d], 
+                                              censored_right=self.censored_right[0,d], 
                                               tail_extrapolation=self.tail_extrapolation,
                                               interpolation=self.quantile_interpolation) 
         return p_pred

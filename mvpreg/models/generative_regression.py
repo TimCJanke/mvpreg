@@ -44,13 +44,14 @@ class DeepGenerativeRegression(MVPRegModel):
             x_ = np.array_split(x, np.ceil(size/max_array_size_mb).astype(int))
             y = []
             for x_i in x_:
-                y.append(self.model(np.repeat(np.expand_dims(self._scale_x(x_i), axis=2), repeats=n_samples, axis=2)))
+                y.append(self.model(np.repeat(np.expand_dims(self._scale_x(x_i), axis=2), repeats=n_samples, axis=2)).numpy())
             y = np.concatenate(y, axis=0)
         
         else:
-            y = self.model(np.repeat(np.expand_dims(self._scale_x(x), axis=2), repeats=n_samples, axis=2))
+            y = self.model(np.repeat(np.expand_dims(self._scale_x(x), axis=2), repeats=n_samples, axis=2)).numpy()
 
         return self._rescale_y_samples(y)
+             
 
 
 class ScoringRuleDGR(DeepGenerativeRegression):
