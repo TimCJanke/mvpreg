@@ -17,7 +17,7 @@ def calibration_score(pseudo_obs, n_grid=100):
 
 
 # Pinball Score
-def pinball_score(y, dat, taus, return_single_scores=False, return_qloss=False):
+def pinball_score(y, dat, taus, return_single_scores=False):
 
     """
     Compute average Pinball Score from quantiles of the predictive distribution.
@@ -49,12 +49,8 @@ def pinball_score(y, dat, taus, return_single_scores=False, return_qloss=False):
     err = y-dat
     q_loss = np.maximum(err*taus,err*(taus-1))
     
-    if return_single_scores is True and return_qloss is False:
-        return (np.mean(q_loss), np.mean(q_loss,axis=1)) 
-    elif return_single_scores is False and return_qloss is True:
-        return (np.mean(q_loss), np.mean(q_loss,axis=0))
-    elif return_single_scores is True and return_qloss is True: 
-        return (np.mean(q_loss), np.mean(q_loss,axis=1), np.mean(q_loss,axis=0))
+    if return_single_scores is True:
+        q_loss
     else:
         return np.mean(q_loss)
 
@@ -94,34 +90,6 @@ def crps_sample(y_true, y_pred, return_single_scores=False):
     else:
         return np.mean(scores)
 
-
-
-# Log Score
-def logs_sample(y, dat, bw=None, return_single_scores=False):
-    """
-    Compute log-Score from samples of the predictive distribution.
-
-    Parameters
-    ----------
-    y : array, shape(n_examples,)
-        True values.
-    dat : array, shape (n_examples, n_samples)
-        Predictive scenarios.
-    bw : array matching shape of y, optional
-        Array of bandwiths for KDE. The default is None.
-
-    Returns
-    -------
-    float or tuple of (float, array)
-        Returns average log-Score.
-        If return_single_scores is True, also returns array of scores for single examples.
-
-    """
-    scores = None
-    if return_single_scores:
-        return np.mean(scores), np.asarray(scores)
-    else:
-        return np.mean(scores)
 
 
 
@@ -256,8 +224,9 @@ def vs_sample_batch(y_true, y_pred, p=0.5, return_single_scores=False):
 
 
 def get_all_scores_sample(y_true, y_pred, 
+                          return_single_scores = False,
                           CALIBRATION =True,
-                           RMSE=True, MAE=True, 
+                           MSE=True, MAE=True, 
                            CRPS=True, ES=True, VS05=True, VS1=False, 
                            CES=False, CVS05=False, CVS1=False):
     """
@@ -271,7 +240,7 @@ def get_all_scores_sample(y_true, y_pred,
         Samples from predictive distribution. 
     CALIBRATION : TYPE, optional
         DESCRIPTION. The default is True.    
-    RMSE : TYPE, optional
+    MSE : TYPE, optional
         DESCRIPTION. The default is True.
     MAE : TYPE, optional
         DESCRIPTION. The default is True.
@@ -309,36 +278,44 @@ def get_all_scores_sample(y_true, y_pred,
     if CALIBRATION:
         scores["CAL"] = calibration_score_sample(y_true, y_pred)
         
-    if RMSE:
-        scores["RMSE"] = np.sqrt(np.mean(np.square(y_true - np.mean(y_pred,axis=2))))
+    if MSE:
+        s = np.square(y_true - np.mean(y_pred,axis=2))
+        if return_single_scores: 
+            scores["MSE"] = s
+        else:
+            scores["MSE"] = np.mean(s)
     
     if MAE:
-        scores["MAE"] = np.mean(np.abs(y_true - np.median(y_pred,axis=2)))
+        s = np.abs(y_true - np.median(y_pred,axis=2))
+        if return_single_scores: 
+            scores["MAE"] = s
+        else:
+            scores["MAE"] = np.mean(s)    
     
     if CRPS:
-        scores["CRPS"] = crps_sample(np.reshape(y_true, (-1,1)), np.reshape(y_pred, (-1, y_pred.shape[2])))
+        scores["CRPS"] = crps_sample(np.reshape(y_true, (-1,1)), np.reshape(y_pred, (-1, y_pred.shape[2])), return_single_scores=return_single_scores)
     
     if ES:
-        scores["ES"] = es_sample(y_true, y_pred)
+        scores["ES"] = es_sample(y_true, y_pred, return_single_scores=return_single_scores)
     
     if VS05:
-        scores["VS05"] = vs_sample(y_true, y_pred, p=0.5)
+        scores["VS05"] = vs_sample(y_true, y_pred, p=0.5, return_single_scores=return_single_scores)
     
     if VS1:
-        scores["VS1"] = vs_sample(y_true, y_pred, p=1.0)
+        scores["VS1"] = vs_sample(y_true, y_pred, p=1.0, return_single_scores=return_single_scores)
         
     if CES or CVS05 or CVS1:     
         
         y_true_pobs, y_predict_pobs  = _get_pobs(y_true, y_pred, make_uniform=True)
         
         if CES:
-            scores["CES"] = 1/np.sqrt(y_pred.shape[1]) * es_sample(y_true_pobs, y_predict_pobs) - (0.25 - 0.5*(1/np.sqrt(6)))
+            scores["CES"] = 1/np.sqrt(y_pred.shape[1]) * es_sample(y_true_pobs, y_predict_pobs, return_single_scores=return_single_scores) - (0.25 - 0.5*(1/np.sqrt(6)))
         
         if CVS05:
-            scores["CVS05"] = vs_sample(y_true_pobs, y_predict_pobs, p=0.5)
+            scores["CVS05"] = vs_sample(y_true_pobs, y_predict_pobs, p=0.5, return_single_scores=return_single_scores)
         
         if CVS1:
-            scores["CVS1"] = vs_sample(y_true_pobs, y_predict_pobs, p=1.0)
+            scores["CVS1"] = vs_sample(y_true_pobs, y_predict_pobs, p=1.0, return_single_scores=return_single_scores)
         
     return scores
     
