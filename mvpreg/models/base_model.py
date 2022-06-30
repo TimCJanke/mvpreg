@@ -277,7 +277,7 @@ class MVPRegModel(object):
             self.model = self._build_model() # necessary as these are hyper parameters of the model
         
         if early_stopping:
-            es_clb = tf.keras.callbacks.EarlyStopping(patience=patience, verbose=1, mode="min", restore_best_weights=restore_best_weights)
+            es_clb = tf.keras.callbacks.EarlyStopping(patience=patience, verbose=verbose, mode="min", restore_best_weights=restore_best_weights)
             if callbacks is None:
                 callbacks = es_clb
             elif isinstance(callbacks, (list, tuple, np.ndarray)):
