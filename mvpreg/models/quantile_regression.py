@@ -28,7 +28,8 @@ class DeepQuantileRegression(MarginsAndCopulaModel):
         self.tail_extrapolation = tail_extrapolation # how to deal with the tails of the distributions outside of estimated quantiles
 
         self.model = self._build_model()
-        self.model.summary(expand_nested=True)
+        if self.show_model_summary:
+            self.model.summary(expand_nested=True)
 
         
     def _build_model(self):

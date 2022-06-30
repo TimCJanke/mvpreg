@@ -108,8 +108,8 @@ class VineCopula(object):
             else:
                 self.copula = pv.Vinecop(data=u, controls=self.controls, structure=pv.RVineStructure(order=self.vine_structure))
         
-        print("\nVine copula fit:\n")
-        print(self.copula.str())
+        #print("\nVine copula fit:\n")
+        #print(self.copula.str())
         
         return self
 

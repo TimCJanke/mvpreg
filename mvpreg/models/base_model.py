@@ -27,7 +27,8 @@ class MVPRegModel(object):
                  input_scaler = None,
                  shared_input_scaler = False,
                  output_scaler = None,
-                 shared_output_scaler = False
+                 shared_output_scaler = False,
+                 show_model_summary=False
                  ):
 
         # forward model hyperparameters
@@ -59,6 +60,8 @@ class MVPRegModel(object):
         self.output_scaler = output_scaler
         self.shared_output_scaler = shared_output_scaler
 
+        self.show_model_summary = show_model_summary
+        
         self._expand_y_dim = False # internal flag used for preparing y arrays in correct shape
  
         
@@ -283,7 +286,7 @@ class MVPRegModel(object):
                 callbacks = [callbacks, es_clb]
             
         # run training
-        print("\nTraining model... \n")
+        #print("\nTraining model... \n")
         self.loss_dict = self.model.fit(x=x_, 
                                         y=y_,
                                         batch_size=batch_size, 
@@ -303,7 +306,7 @@ class MVPRegModel(object):
                                         workers=workers,
                                         use_multiprocessing=use_multiprocessing                                           
                                         )
-        print("\nModel training done. \n")
+        #print("\nModel training done. \n")
 
         
         if plot_learning_curve:
@@ -449,9 +452,9 @@ class MarginsAndCopulaModel(MVPRegModel):
         super().fit(x, y, **kwargs)
         
         if fit_copula_model:
-            print("\nFitting copula model...")
+            #print("\nFitting copula model...")
             self.fit_copula(x, y)
-            print("Done.\n")
+            #print("Done.\n")
         return self
     
     def simulate_copula(self, n_samples=1):

@@ -33,7 +33,8 @@ class DeepParametricRegression(MarginsAndCopulaModel):
             self.n_params_distribution = 3
         
         self.model = self._build_model()
-        self.model.summary(expand_nested=True)
+        if self.show_model_summary:
+            self.model.summary(expand_nested=True)
 
     
     def _build_model(self):

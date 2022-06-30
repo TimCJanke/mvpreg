@@ -75,7 +75,8 @@ class ScoringRuleDGR(DeepGenerativeRegression):
             raise ValueError("Unknown loss function. 'loss' must be ES or VS.")
         
         self.model = self._build_model()
-        self.model.summary(expand_nested=True)
+        if self.show_model_summary:
+            self.model.summary(expand_nested=True)
 
 
     def _build_model(self):
