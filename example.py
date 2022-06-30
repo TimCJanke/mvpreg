@@ -121,7 +121,7 @@ visualization.scenario_plot_spatial(y_test[400,0:3], y_predict["DGR"][400,0:3,0:
 # let's compare models based on several scores
 scores={}
 for key in y_predict:
-    scores[key] = scoring_rules.get_all_scores_sample(y_test, y_predict[key][:,:,0:500])
+    scores[key] = scoring_rules.all_scores_mv_sample(y_test, y_predict[key][:,:,0:500])
 scores = pd.DataFrame(scores).T
 print(scores)
 

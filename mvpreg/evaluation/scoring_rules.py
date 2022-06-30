@@ -223,7 +223,7 @@ def vs_sample_batch(y_true, y_pred, p=0.5, return_single_scores=False):
 
 
 
-def get_all_scores_sample(y_true, y_pred, 
+def all_scores_mv_sample(y_true, y_pred, 
                           return_single_scores = False,
                           CALIBRATION =True,
                            MSE=True, MAE=True, 
@@ -293,7 +293,14 @@ def get_all_scores_sample(y_true, y_pred,
             scores["MAE"] = np.mean(s)    
     
     if CRPS:
-        scores["CRPS"] = crps_sample(np.reshape(y_true, (-1,1)), np.reshape(y_pred, (-1, y_pred.shape[2])), return_single_scores=return_single_scores)
+        s = np.reshape(crps_sample(np.reshape(y_true, (-1,1)), 
+                                                np.reshape(y_pred, (-1, y_pred.shape[2])), 
+                                                return_single_scores=True),
+                                    (-1, y_true.shape[1]))
+        if return_single_scores:
+            scores["CRPS"] = np.mean(np.reshape(s, (-1, y_true.shape[1])), axis=1)
+        else:
+            scores["CRPS"] = np.mean(s)
     
     if ES:
         scores["ES"] = es_sample(y_true, y_pred, return_single_scores=return_single_scores)
