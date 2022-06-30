@@ -281,14 +281,14 @@ def get_all_scores_sample(y_true, y_pred,
     if MSE:
         s = np.square(y_true - np.mean(y_pred,axis=2))
         if return_single_scores: 
-            scores["MSE"] = s
+            scores["MSE"] = np.mean(s, axis=1)
         else:
             scores["MSE"] = np.mean(s)
     
     if MAE:
         s = np.abs(y_true - np.median(y_pred,axis=2))
         if return_single_scores: 
-            scores["MAE"] = s
+            scores["MAE"] = np.mean(s, axis=1)
         else:
             scores["MAE"] = np.mean(s)    
     
@@ -361,7 +361,7 @@ def _rank_data_random_tiebreaker(a):
 
 
 
-def dm_test(loss_1, loss_2, h=1, hln_correction=False):
+def dm_test(loss_1, loss_2, h=1, hln_correction=True):
     """DM test with optional HLN correction (as in R forecast package)
     Tests the null hypothesis that forecasts from both models have the same accuracy,
     the alternative hypothesis is that model 1 has better accuracy than model 2."""
@@ -395,7 +395,7 @@ def dm_test(loss_1, loss_2, h=1, hln_correction=False):
     return p_value
 
 
-def dm_test_matrix(losses: dict, h=1, hln_correction=False, model_names=None):
+def dm_test_matrix(losses: dict, h=1, hln_correction=True, model_names=None):
     
     if model_names is None:
         model_names = losses.keys()
