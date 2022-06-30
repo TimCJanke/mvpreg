@@ -151,7 +151,8 @@ class AdversarialDGR(DeepGenerativeRegression):
             raise ValueError("Unknown validation metric function. 'validation_metric' must be 'ES' or 'VS'.")
 
         self.model = self._build_model()
-        self.model.summary(expand_nested=True)
+        if self.show_model_summary:
+            self.model.summary(expand_nested=True)
 
     def _build_model(self):
         model = ConditionalGAN(dim_out=self.dim_out, 
