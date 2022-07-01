@@ -294,8 +294,8 @@ def all_scores_mv_sample(y_true, y_pred,
             scores["MAE"] = np.mean(s)    
     
     if PB:
-        q_pred = np.quantile(y_pred, q=taus, axis=2, method="linear", keepdims=True) # [N, D, len(tau)]
-        s = pinball_score(np.reshape(y_true, (-1,1)), np.reshape(q_pred, (-1, q_pred.shape[2])), taus=taus, return_single_scores=True) # [NxD,len(tau)]
+        q_pred = np.transpose(np.quantile(y_pred, q=taus, axis=2, method="linear"), (1,2,0)) # [N, D, len(taus)]
+        s = pinball_score(np.reshape(y_true, (-1,1)), np.reshape(q_pred, (-1, len(taus))), taus=taus, return_single_scores=True) # [NxD,len(taus)]
         for i, tau in enumerate(taus):
             if return_single_scores:
                 scores["PB_"+str(tau)] = np.mean(np.reshape(s[:,i], (-1, y_true.shape[1])), axis=1)
