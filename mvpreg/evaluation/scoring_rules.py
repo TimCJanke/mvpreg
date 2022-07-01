@@ -46,6 +46,7 @@ def pinball_score(y, dat, taus, return_single_scores=False):
     
     if len(y.shape) == 1:
         y = np.expand_dims(y,1)
+    taus = np.asarray(taus)
     err = y-dat
     q_loss = np.maximum(err*taus,err*(taus-1))
     
