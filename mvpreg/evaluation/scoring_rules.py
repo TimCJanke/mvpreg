@@ -51,7 +51,7 @@ def pinball_score(y, dat, taus, return_single_scores=False):
     q_loss = np.maximum(err*taus,err*(taus-1))
     
     if return_single_scores is True:
-        q_loss
+        return q_loss
     else:
         return np.mean(q_loss)
 
