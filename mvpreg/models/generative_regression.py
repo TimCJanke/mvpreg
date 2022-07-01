@@ -107,6 +107,7 @@ class AdversarialDGR(DeepGenerativeRegression):
                  activation_discriminator=None,
                  output_activation_discriminator="sigmoid",
                  optimizer_discriminator = "Adam",
+                 optimizer_discriminator_kwargs = {},
                  label_smoothing = False,
                  generator_train_steps = 1,
                  discriminator_train_steps = 1,
@@ -132,8 +133,13 @@ class AdversarialDGR(DeepGenerativeRegression):
         else:
             self.activation_discriminator = activation_discriminator
         
-        self.output_activation_discriminator = output_activation_discriminator     
-        self.optimizer_discriminator = optimizer_discriminator
+        self.output_activation_discriminator = output_activation_discriminator
+        
+        # training
+        if isinstance(optimizer_discriminator, str):
+            self.optimizer_discriminator = getattr(tf.keras.optimizers, optimizer_discriminator)(**optimizer_discriminator_kwargs)
+        else:
+            self.optimizer_discriminator = optimizer_discriminator
 
         # training loop
         self.generator_train_steps = generator_train_steps

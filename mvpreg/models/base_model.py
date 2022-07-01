@@ -24,6 +24,7 @@ class MVPRegModel(object):
                  censored_left = -np.inf,
                  censored_right = np.inf,
                  optimizer = "Adam",
+                 optimizer_kwargs = {},
                  input_scaler = None,
                  shared_input_scaler = False,
                  output_scaler = None,
@@ -52,7 +53,10 @@ class MVPRegModel(object):
             self.censored_right = np.zeros((1, self.dim_out)) + censored_right
         
         # training
-        self.optimizer = optimizer
+        if isinstance(optimizer, str):
+            self.optimizer = getattr(tf.keras.optimizers, optimizer)(**optimizer_kwargs)
+        else:
+            self.optimizer = optimizer
 
         # input and output scaling
         self.input_scaler = input_scaler
