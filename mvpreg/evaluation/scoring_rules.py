@@ -225,9 +225,10 @@ def vs_sample_batch(y_true, y_pred, p=0.5, return_single_scores=False):
 
 def all_scores_mv_sample(y_true, y_pred, 
                           return_single_scores = False,
-                          CALIBRATION =True,
+                          taus=[0.1, 0.9],
+                          CALIBRATION=True,
                            MSE=True, MAE=True, 
-                           CRPS=True, ES=True, VS05=True, VS1=False, 
+                           PB=True, CRPS=True, ES=True, VS05=True, VS1=False, 
                            CES=False, CVS05=False, CVS1=False):
     """
     Compute an set of univariate and multivariate scoring rules based on samples.
@@ -292,11 +293,21 @@ def all_scores_mv_sample(y_true, y_pred,
         else:
             scores["MAE"] = np.mean(s)    
     
+    if PB:
+        q_pred = np.quantile(y_pred, q=taus, axis=2, method="linear", keepdims=True) # [N, D, len(tau)]
+        s = pinball_score(np.reshape(y_true, (-1,1)), np.reshape(q_pred, (-1, q_pred.shape[2])), return_single_scores=True) # [NxD,len(tau)]
+        for i, tau in enumerate(taus):
+            if return_single_scores:
+                scores["PB_"+str(tau)] = np.mean(np.reshape(s[:,i], (-1, y_true.shape[1])), axis=1)
+            else:
+                scores["PB_"+str(tau)] = np.mean(s[:,i])
+    
     if CRPS:
         s = np.reshape(crps_sample(np.reshape(y_true, (-1,1)), 
                                                 np.reshape(y_pred, (-1, y_pred.shape[2])), 
                                                 return_single_scores=True),
-                                    (-1, y_true.shape[1]))
+                       (-1, y_true.shape[1]))
+        
         if return_single_scores:
             scores["CRPS"] = np.mean(np.reshape(s, (-1, y_true.shape[1])), axis=1)
         else:
