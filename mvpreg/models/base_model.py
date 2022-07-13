@@ -276,9 +276,15 @@ class MVPRegModel(object):
         x_, y_, x_val_, y_val_ = self._prepare_training_data(x, y, x_val, y_val)
         
         if self.output_scaler is not None:
-            self.censored_left = self._scale_y(self.censored_left)
-            self.censored_right = self._scale_y(self.censored_right)
-            self.model = self._build_model() # necessary as these are hyper parameters of the model
+            
+            if not all(self.censored_left==-np.inf):
+                self.censored_left = self._scale_y(self.censored_left)
+            
+            if not all(self.censored_right==np.inf):
+                self.censored_right = self._scale_y(self.censored_right)
+            
+            if not (all(self.censored_right==np.inf) and all(self.censored_left==-np.inf)):
+                self.model = self._build_model() # necessary as these are hyper parameters of the model
         
         if early_stopping:
             es_clb = tf.keras.callbacks.EarlyStopping(patience=patience, verbose=verbose, mode="min", restore_best_weights=restore_best_weights)
@@ -320,6 +326,7 @@ class MVPRegModel(object):
     
     
     def _set_model(self, model):
+        # TODO: WARNING: atm this will only work if output scaler is None or there is no censoring!!! 
         # a function to supply custom keras model (needs to be compiled and trainable with model.fit())
         self.model = model
     
