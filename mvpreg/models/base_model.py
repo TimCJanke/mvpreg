@@ -332,7 +332,6 @@ class MVPRegModel(object):
     
     
     def _prepare_training_data(self, x, y, x_val=None, y_val=None):
-        # prepare x
         
         x = self._scale_x(x)
         y = self._scale_y(y)
@@ -344,8 +343,9 @@ class MVPRegModel(object):
             y_val = self._scale_y(y_val)
             if self._expand_y_dim:
                 y_val = np.expand_dims(y_val, axis=-1)
-
-        return x, y, x_val, y_val
+            return x, y, x_val, y_val
+        else:
+            return x, y, None, None
         
 
     def _fit_x_scaler(self,x):
