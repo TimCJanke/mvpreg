@@ -275,6 +275,11 @@ class MVPRegModel(object):
         self._fit_y_scaler(y)
         x_, y_, x_val_, y_val_ = self._prepare_training_data(x, y, x_val, y_val)
         
+        if x_val is None:
+            val_data=None
+        else:
+            val_data = (x_val_, y_val_)
+        
         if self.output_scaler is not None:
             
             if not np.all(self.censored_left==-np.inf):
@@ -304,7 +309,7 @@ class MVPRegModel(object):
                                         verbose=verbose,
                                         callbacks=callbacks,
                                         validation_split=validation_split,
-                                        validation_data=(x_val_, y_val_),
+                                        validation_data=val_data,
                                         shuffle=shuffle,
                                         sample_weight=sample_weight,
                                         initial_epoch=initial_epoch,
@@ -343,9 +348,9 @@ class MVPRegModel(object):
             y_val = self._scale_y(y_val)
             if self._expand_y_dim:
                 y_val = np.expand_dims(y_val, axis=-1)
-            return x, y, x_val, y_val
-        else:
-            return x, y, None, None
+        
+        return x, y, x_val, y_val
+
         
 
     def _fit_x_scaler(self,x):
