@@ -1,0 +1,10 @@
+matplotlib
+numpy
+pandas
+pyvinecopulib
+scikit-learn
+scipy
+seaborn
+statsmodels
+tensorflow
+tensorflow-probability
