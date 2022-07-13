@@ -277,13 +277,13 @@ class MVPRegModel(object):
         
         if self.output_scaler is not None:
             
-            if not all(self.censored_left==-np.inf):
+            if not np.all(self.censored_left==-np.inf):
                 self.censored_left = self._scale_y(self.censored_left)
             
-            if not all(self.censored_right==np.inf):
+            if not np.all(self.censored_right==np.inf):
                 self.censored_right = self._scale_y(self.censored_right)
             
-            if not (all(self.censored_right==np.inf) and all(self.censored_left==-np.inf)):
+            if not (np.all(self.censored_right==np.inf) and np.all(self.censored_left==-np.inf)):
                 self.model = self._build_model() # necessary as these are hyper parameters of the model
         
         if early_stopping:
