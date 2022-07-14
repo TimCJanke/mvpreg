@@ -128,7 +128,7 @@ class EnergyScoreMetric(tf.keras.metrics.Metric):
     super().__init__(name=name, **kwargs)
     self.es = self.add_weight(name='es', initializer = 'zeros')
 
-  def update_state(self, y_true, y_pred):
+  def update_state(self, y_true, y_pred, sample_weight=None):
       self.es.assign_add(tf.reduce_mean(compute_energy_score(y_true, y_pred)))
 
   def result(self):
@@ -144,7 +144,7 @@ class VariogramScoreMetric(tf.keras.metrics.Metric):
     self.vs = self.add_weight(name='vs', initializer = 'zeros')
     self.p = p
     
-  def update_state(self, y_true, y_pred):
+  def update_state(self, y_true, y_pred, sample_weight=None):
       self.vs.assign_add(tf.reduce_mean(compute_variogram_score(y_true, y_pred, p=self.p)))
 
   def result(self):
