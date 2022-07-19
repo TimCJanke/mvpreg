@@ -19,7 +19,7 @@ class MVPRegModel(object):
                  dim_out=None,
                  n_layers=2, 
                  n_neurons = 100, 
-                 activation = "relu",
+                 activation = "elu",
                  output_activation = "linear",
                  censored_left = -np.inf,
                  censored_right = np.inf,
