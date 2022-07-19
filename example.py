@@ -64,6 +64,9 @@ model_dqr.fit(x_train,
 
 y_predict["QR"] = model_dqr.simulate(x_test, n_samples=1000)
 
+# we can also predict the quantiles of the conditional distribution:
+quantiles_predict = model_dqr.predict_quantiles(x_test)
+
 #%% Parametric + Copula
 model_param = PRM(**nn_base_config, distribution="LogitNormal", copula_type="gaussian")
 model_param.fit(x_train, 
@@ -75,6 +78,8 @@ model_param.fit(x_train,
 
 y_predict["PARAM"] = model_param.simulate(x_test, n_samples=1000)
 
+# we can also predict the parameters of the conditional distribution:
+params_predict = model_param.predict_params(x_test)
 
 #%% Scoring Rule Deep Generative Model
 model_dgr = DGR(**nn_base_config, 

@@ -58,8 +58,9 @@ class DeepParametricRegression(MarginsAndCopulaModel):
                 params_predict = [params_1, params_2, params_3]
             
             # workaround for being able to inspect predicted parameters
-            params_predict = layers.Concatenate(axis=-1, name="params_predict")(params_predict) # list to tensor
-            params_predict = layers.Lambda(lambda arg: tf.unstack(arg, num=self.n_params_distribution, axis=-1))(params_predict) # tensor to list
+            #params_predict = layers.Concatenate(axis=-1, name="params_predict")(params_predict) # list to tensor
+            params_predict = layers.Lambda(lambda args: tf.stack(args, axis=2), name="params_predict")(params_predict) # list to tensor
+            params_predict = layers.Lambda(lambda arg: tf.unstack(arg, num=self.n_params_distribution, axis=2))(params_predict) # tensor to list
 
             if self.distribution == "Normal":
                 dist_pred = tfp.layers.DistributionLambda(lambda params: tfp.distributions.Normal(loc=params[0], scale=params[1]))(params_predict)
